@@ -21,3 +21,23 @@ plantp_capreg  <- subset(mcapreg, costitem=='PLAP' & dim2=='UVAG')
 
 qplot(year,value,data=plantp_capreg,geom="line",colour=country) + 
   opts(title="plant protection costs PLAP.UVAG in capreg time series")
+
+#some statistics (including coefficient of variance)
+mystats <- function(x)(c(N=length(x), Mean=mean(x), SD=sd(x), CoV=sd(x)/mean(x)))
+
+cast(plantp_capreg, country~.,mystats)
+
+#detrend with a linear model
+#U.K. example
+ukplantp  <- subset(plantp_capreg, country=='UK000000')
+lm.uk  <- lm(value ~ year, data=ukplantp)
+
+#graphical representation
+p  <- qplot(year,value, data=ukplantp, geom="line")
+p+geom_abline(intercept=lm.uk$coefficients[1],slope=lm.uk$coefficients[2])
+
+
+
+
+
+
