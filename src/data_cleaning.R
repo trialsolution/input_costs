@@ -52,3 +52,16 @@ names(mseed)[2]  <- "year"
 
 
 qplot(year,value,data=mseed,geom="line",colour=Country)
+
+#young heifers (IHEI)
+heifer  <- subset(coco, CostItem=='IHEI' & dim3=='HEIR')
+heifer <- heifer[c(-2,-3)]
+mheifer  <- melt(heifer, id=1)
+
+mheifer$variable  <- as.numeric(as.character(mheifer$variable))
+names(mheifer)[2]  <- "year"
+
+
+qplot(year,value,data=mheifer,geom="line",colour=Country) + 
+  opts(title="heifers remonte HEIR.IHEI in COCO")
+
