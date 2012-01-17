@@ -15,6 +15,32 @@ mcapreg <- melt(capreg, id=1:3, na.rm=TRUE)
 mcapreg$variable  <- as.numeric(as.character(mcapreg$variable))
 names(mcapreg)[4]  <- "year"
 
+#loading set definitions (cost items, agric. activities etc.)
+costitems <- read.csv('data/cost_items.csv', header=FALSE)
+names(costitems)  <- c("item", "label")
+unitvalues <- read.csv('data/unit_values.csv', header=FALSE)
+names(unitvalues)  <- c("item", "label")
+activities  <- read.csv('data/activities.csv', header=FALSE)
+names(activities)  <- c("acode", "label")
+countries  <- read.csv('data/countries.csv', header=FALSE)
+names(countries)  <- c("countrycode", "label")
+
+#calculating costs: multiply input price with physical quantities applied
+
+#.. a) separate quantities and price
+indicator  <- mcapreg$dim2 %in% unique(activities$acode)
+costsq  <- mcapreg[indicator, ]
+costsp  <- subset(mcapreg, dim2 == "UVAP", select=c("country", "costitem", "year", "value"))
+
+#.. b) create new data frame with costs
+costsv  <- merge(costsq, costsp, by=c("costitem", "country", "year"))
+#.. the column 'v' will contain actual costs (monetary values/hectare)
+costsv  <- data.frame(costsv, v=costsv$value.x*costsv$value.y)
+names(costsv)[5]  <- "q"
+names(costsv)[6]  <- "p"
+
+# drop unnecessary data frames
+rm(costsq, costsp)
 
 #plant protection costs
 plantp_capreg  <- subset(mcapreg, costitem=='PLAP' & dim2=='UVAG')

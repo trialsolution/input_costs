@@ -195,4 +195,5 @@ execute_load '%projectfolder%data\res_time_series.gdx', CapregData=Data1;
 * using conversion tool from Wietse
 $include '2csv_capreg.gms'
 
-
+* --- unload set definitions
+execute_unload '%projectfolder%gams\set_definitions.gdx', activities, unit_values, cost_items, countries;

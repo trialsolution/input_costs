@@ -6,34 +6,6 @@
 [RP:CLEANUP_CONVERSION]
 1=
 
-[OPENWINDOW_1]
-MAXIM=0
-TOP=86
-LEFT=25
-HEIGHT=769
-WIDTH=884
-
-[GDXDISP: DATA2 Par 5]
-PlaneDim=1
-RowDim=3
-Squeeze=1
-Order=4,1,2,3,5
-Decim=7
-PlaneRownr=124
-PlaneFilter1=SEED
-
-[RP:LOAD_COCO]
-1=
-
-[GDXDISP: DATA1 Par 4]
-PlaneDim=1
-RowDim=2
-Squeeze=1
-Order=3,1,2,4
-Decim=7
-PlaneRownr=69
-PlaneFilter1=NITF
-
 [RP:2CSV]
 1=
 
@@ -49,16 +21,84 @@ PlaneFilter1=NITF
 [RP:INPUTTOR_CAPREG]
 1=
 
+[OPENWINDOW_1]
+MAXIM=1
+TOP=86
+LEFT=25
+HEIGHT=769
+WIDTH=884
+
+[GDXDISP: p_aglinkOri Par 4]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DATA2 Par 5]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+Order=4,1,2,3,5
+Decim=7
+PlaneRownr=126
+PlaneFilter1=REPM
+
+[RP:LOAD_COCO]
+1=
+
 [RP:LOAD_CAPREG]
 1=
 
+[GDXDISP: activities Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: cost_items Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: countries Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: unit_values Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DATA1 Par 4]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+Order=3,1,2,4
+Decim=7
+PlaneRownr=122
+PlaneFilter1=PLAP
+
 [MRUFILES]
-1=D:\User-DATA\capri\inputc\gams\load_capreg.lst
-2=D:\User-DATA\capri\inputc\gams\load_capreg.gms
-3=D:\User-DATA\capri\inputc\gams\InputToR_Capreg.gms
-4=D:\User-DATA\capri\inputc\gams\2csv_capreg.gms
-5=D:\User-DATA\capri\inputc\data\res_time_series.gdx
-6=D:\User-DATA\capri\inputc\gams\InputToR.gms
-7=D:\User-DATA\capri\inputc\gams\2csv_settings.gms
-8=D:\User-DATA\capri\inputc\gams\2csv.gms
-9=D:\User-DATA\capri\master\results\Capreg\res_time_series.gdx
+1=D:\User-DATA\capri\inputc\data\res_time_series.gdx
+2=D:\User-DATA\capri\inputc\gams\set_definitions.gdx
+3=D:\User-DATA\capri\inputc\gams\load_capreg.lst
+4=D:\User-DATA\capri\inputc\gams\load_capreg.gms
+5=D:\User-DATA\capri\master\results\Capreg\res_time_series.gdx
+6=D:\User-DATA\capri\inputc\gams\load_coco.lst
+7=D:\User-DATA\capri\inputc\gams\load_coco.gms
+8=C:\Documents and Settings\himicmi\Desktop\baseline\data\aglink2011DGAgri_oriData.gdx
+9=D:\User-DATA\capri\master\results\CoCo\coco2_output.gdx
