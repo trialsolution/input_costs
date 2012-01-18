@@ -9,7 +9,7 @@ $setglobal projectfolder d:\User-DATA\capri\inputc\
 *A) create filter for input costs variables
 
 * the data parameter has 5 dimensions; here we specify filters to load the required subset
-set years /1984*2007/;
+set years /1984*2010/;
 
 set countries/
 *EU15
@@ -45,7 +45,9 @@ set countries/
     BG000000  "Bulgaria"
    /;
 
-set coco_stages "CoCo processing stage of interest" /'COCO2'/;
+
+* time-series until 2010 for 'nowcasting' in captrd (see svn log)
+set coco_stages "CoCo processing stage of interest" /'COCO1', 'COCO2'/;
 
 
 
@@ -94,64 +96,7 @@ set cost_items "cost items of interest"/
 
 * we only list the animal activites here for the young animal costs (see remark above)
 set activities "agricultural activities of interets"/
-$ontext
-*cropping activities
-
-      SWHE   "Soft wheat production activity"
-      DWHE   "Durum wheat production activity"
-      RYEM   "Rye and meslin production activity"
-      BARL   "Barley production activity"
-      OATS   "Oats and summer cereal mixes production activity without triticale"
-      MAIZ   "Grain maize production activity"
-      OCER   "Other cereals production activity including triticale"
-
-      RAPE   "Rape production activity"
-      SUNF   "Sunflower production activity"
-      SOYA   "Soya production activity"
-
-      PARI   Paddy rice production activity,
-
-      OLIV   Olive production activity for the oil industry
-*
-      PULS   Pulses production activity
-      POTA   Potatoes production activity
-      SUGB   Sugar beet production activity
-      TEXT   Flax and hemp production activity
-      TOBA   Tobacco production activity
-*
-      TOMA   Tomatoes production activity
-      OVEG   Other vegetables production activity
-      APPL   Apples  pears and peaches production activity
-      OFRU   Other fruits production activity
-      CITR   Citrus fruits production activity
-      TAGR   Table grapes production activity
-      TABO   Table olives production activity
-      TWIN   Wine production activity
-*
-      FALL   Fallow land
-*
-*     Fodder production on arable land
-*
-      MAIF   "Fodder maize production activity"
-      ROOF   "Fodder root crops production activity"
-      OFAR   "Fodder other on arable land production activity"
-*
-*     Production on grassland
-*
-      GRAE   "Gras and grazings production activity extensive"
-      GRAI   "Gras and grazings production activity intensive"
-$offtext
-
-
-*endogenous animal activities
-
-* different intensitites are not avilable in CoCo (only Capreg
-*      DCOL   Dairy cows production activity low yield
-*      DCOH   Dairy cows  production activityhigh yield
-*      BULL   Male adult fattening activity low final weight
-*      BULH   Male adult fattening activity high final weight
-*      HEIL   Heifers fattening activity low final weight
-*      HEIH   Heifers fattening activity high final weight
+*some animal activities with coco data
 *
       SCOW   Suckler cows production activity
       HEIR   Heifers raising activity
