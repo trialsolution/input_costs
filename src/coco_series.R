@@ -1,4 +1,4 @@
-#data cleaning routines
+#Coco data analysis
 
 library(reshape2)
 library(qqplot2)
@@ -7,61 +7,76 @@ library(qqplot2)
 coco  <- read.csv("data/Data2.csv", header=TRUE)
 
 #correct header
-names(coco)  <- c("Country",  "dim3", "CostItem", "1984",    "1985",   "1986",    "1987",    "1988" ,   "1989",    "1990",  "1991",    "1992",    "1993",    "1994",    "1995",
+names(coco)  <- c("country","stage",  "dim3", "costitem", "1984",    "1985",   "1986",    "1987",    "1988" ,   "1989",    "1990",  "1991",    "1992",    "1993",    "1994",    "1995",
 "1996",    "1997",    "1998",    "1999",    "2000",
 "2001",    "2002",    "2003",    "2004",    "2005",
-"2006",    "2007" )
+"2006",    "2007",    "2008",    "2009",    "2010")
+
+#melt data
+mcoco <- melt(coco, id=1:4, na.rm=TRUE)
+
+names(mcoco)[5]  <- "year"
+
+#convert years as factors to years as numeric data type (for plotting...)
+mcoco$year <- as.numeric(as.character(mcoco$year))
+
+#loading set definitions (cost items, agric. activities etc.)
+costitems <- read.csv('data/cost_items.csv', header=FALSE)
+names(costitems)  <- c("item", "label")
+unitvalues <- read.csv('data/unit_values.csv', header=FALSE)
+names(unitvalues)  <- c("item", "label")
+activities  <- read.csv('data/activities.csv', header=FALSE)
+names(activities)  <- c("acode", "label")
+countries  <- read.csv('data/countries.csv', header=FALSE)
+names(countries)  <- c("countrycode", "label")
+
+#yield dependent inputs = set IY in CAPRI
+iy <- c("SEED", "PLAP", "REPM", "REPB", "ELEC", "EGAS", "EFUL", "ELUB", "WATR", "INPO", "SERI", "IPHA")
 
 
-# plant protection costs
-plantp  <- subset(coco, CostItem=='PLAP' & dim3=='UVAG')
-plantp <- plantp[c(-2,-3)]
-mplantp  <- melt(plantp, id=1)
-
-mplantp$variable  <- as.numeric(as.character(mplantp$variable))
-names(mplantp)[2]  <- "year"
-
-
-qplot(year,value,data=mplantp,geom="line",colour=Country)
-#! WARNING
-# in 2005 all costs are equal to 1000!
-
-#looking at means and sd
-cast(mplantp, Country~., mean)
-cast(mplantp, Country~., sd)
+#concentrating on UVAP
+#..use coco1 as it has values until 2010
+coco_uvap  <- subset(mcoco, stage=="COCO1" & dim3=="UVAP", select=c("country", "costitem", "year", "value"))
+#..filter only 'iy'
+indicator  <- coco_uvap$costitem %in% iy
+coco_uvap  <- coco_uvap[indicator, ]
 
 
-#seed costs
-seed  <- subset(coco, CostItem=='SEED' & dim3=='UVAG')
-seed <- seed[c(-2,-3)]
-mseed  <- melt(seed, id=1)
-
-mseed$variable  <- as.numeric(as.character(mseed$variable))
-names(mseed)[2]  <- "year"
+#data checking: prices are rebased on year2005=1000
+#=> so declining real prices are suspicious (but possible)
+suspicious  <- coco_uvap[coco_uvap$year==2010 & coco_uvap$value<1000,]
+suspicious
 
 
-qplot(year,value,data=mseed,geom="line",colour=Country)
 
-#seed costs UVAB
-seed  <- subset(coco, CostItem=='SEED' & dim3=='UVAB')
-seed <- seed[c(-2,-3)]
-mseed  <- melt(seed, id=1)
+calculate_cv <- function(mydata,mycostitem,mycountry){
+  # calculates coefficient of variance 
+  # either from a detrended serie (if r-squared is above a limit)
+  # or from the original serie
+  #example: calculate_cv(coco_uvap,"PLAP","UK000000")
+  
+  mysubset  <- subset(mydata, costitem==mycostitem & country==mycountry)
+  lm.temp  <- lm(value ~ year, data=mydata)
+  x <- summary(lm.temp)
+  if(x$adj.r.squared > 0.65) {
+    mycv  <- sd(lm.temp$residuals)/mean(mysubset$value)
 
-mseed$variable  <- as.numeric(as.character(mseed$variable))
-names(mseed)[2]  <- "year"
+  }
+  else{
+    mycv  <- sd(mysubset$value)/mean(mysubset$value)
+  }
+  
+    return(mycv)  
+}
 
 
-qplot(year,value,data=mseed,geom="line",colour=Country)
+#creates a data frame that will contain the coev.
+container  <- cast(coco_uvap, country+costitem~.)
+names(container)[3]  <- "coev"
 
-#young heifers (IHEI)
-heifer  <- subset(coco, CostItem=='IHEI' & dim3=='HEIR')
-heifer <- heifer[c(-2,-3)]
-mheifer  <- melt(heifer, id=1)
-
-mheifer$variable  <- as.numeric(as.character(mheifer$variable))
-names(mheifer)[2]  <- "year"
-
-
-qplot(year,value,data=mheifer,geom="line",colour=Country) + 
-  opts(title="heifers remonte HEIR.IHEI in COCO")
-
+#loop over all countries and cost items
+for(cou in unique(coco_uvap$country)){
+  for(cost in unique(coco_uvap$costitem)){
+    container[country==cou & costitem==cost, ]$coev  <- calculate_cv(coco_uvap, cost, cou)
+  }
+}
