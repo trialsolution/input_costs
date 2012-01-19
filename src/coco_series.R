@@ -80,3 +80,35 @@ for(cou in unique(coco_uvap$country)){
     container[country==cou & costitem==cost, ]$coev  <- calculate_cv(coco_uvap, cost, cou)
   }
 }
+
+
+#investigating CoV results...
+mc <- container
+names(mc)[3] <- "value"
+cast(mc, costitem~., mean)
+cast(mc, costitem~., sd)
+mystats <- function(x)(c(N=length(x), Mean=mean(x), SD=sd(x), Min=min(x), Max=max(x)))
+cast(mc, costitem~., mystats)
+
+#looking at the cov distributions among countries
+p <- ggplot(mc, aes(x=value))
+p + geom_histogram() + facet_grid(costitem~.)
+
+#check possible outliers
+#.. order cov's to see the countries with high values
+mc_egas  <- subset(mc, costitem=="EGAS")
+mc_egas[order(mc_egas$value),]
+
+mc_elub  <- subset(mc, costitem=="ELUB")
+mc_elub[order(mc_elub$value),]
+
+
+#.. full time-series
+p <- ggplot(subset(coco_uvap, country=="LT000000" & costitem=="EGAS"), aes(year,value))
+p + geom_point() + geom_line() + stat_smooth()
+
+p <- ggplot(subset(coco_uvap, country=="UK000000" & costitem=="ELUB"), aes(year,value))
+p + geom_point() + geom_line() + stat_smooth()
+
+p <- ggplot(subset(coco_uvap, country=="PT000000" & costitem=="ELUB"), aes(year,value))
+p + geom_point() + geom_line() + stat_smooth()
