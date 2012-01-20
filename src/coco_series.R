@@ -54,18 +54,31 @@ calculate_cv <- function(mydata,mycostitem,mycountry){
   # either from a detrended serie (if r-squared is above a limit)
   # or from the original serie
   #example: calculate_cv(coco_uvap,"PLAP","UK000000")
+  isfitted  <- FALSE
+  mysubset  <- subset(mydata, mydata$costitem==mycostitem & mydata$country==mycountry)
   
-  mysubset  <- subset(mydata, costitem==mycostitem & country==mycountry)
+  
+  #try a linear model
   lm.temp  <- lm(value ~ year, data=mydata)
   x <- summary(lm.temp)
-  if(x$adj.r.squared > 0.65) {
+  if(x$adj.r.squared > 0.75 & x$coefficients[2,4]<0.05) {
     mycv  <- sd(lm.temp$residuals)/mean(mysubset$value)
-
-  }
-  else{
-    mycv  <- sd(mysubset$value)/mean(mysubset$value)
+    isfitted  <- TRUE
   }
   
+  #if the linear model does not fit try a logarithmic transformation
+  logm.temp  <- lm(log(value) ~ log(year), data=mydata)
+  x <- summary(logm.temp)
+  if(x$adj.r.squared > 0.75 & isfitted=="FALSE" & x$coefficients[2,4]<0.05){
+    
+    mycv  <- sd(exp(logm.temp$fitted.values) - mysubset$value)    /mean(mysubset$value)
+    isfitted  <- TRUE
+    
+  }
+  
+  if(isfitted=="FALSE"){
+    mycv  <- sd(mysubset$value)/mean(mysubset$value)
+  }
     return(mycv)  
 }
 
@@ -77,7 +90,7 @@ names(container)[3]  <- "coev"
 #loop over all countries and cost items
 for(cou in unique(coco_uvap$country)){
   for(cost in unique(coco_uvap$costitem)){
-    container[country==cou & costitem==cost, ]$coev  <- calculate_cv(coco_uvap, cost, cou)
+    container[container$country==cou & container$costitem==cost, ]$coev  <- calculate_cv(coco_uvap, cost, cou)
   }
 }
 
