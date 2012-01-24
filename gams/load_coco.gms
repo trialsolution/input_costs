@@ -91,6 +91,9 @@ set cost_items "cost items of interest"/
         FCER , FPRO , FENE , FMIL , FOTH , FGRA,  FCOM, FSGM, FMAI, FROO, FOFA, FSTR,
         ICAM,  ICAF,  IHEI , ICOW , IPIG , IBUL,  ILAM
 
+
+      FERT   "Fertilizer and soil improvers"
+
 /;
 
 
@@ -124,6 +127,19 @@ set unit_values "unit value columns" /
       UVAP    Unit value EAA producer price
       UVAB    Unit value EAA basic price
       UVAG    Unit value EAA gross producer price
+
+* --- price index
+
+      PRII   Price index EAA
+
+* --- EAA positions
+
+      EAAP   EAA at producer price (current prices)
+      EAAB   EAA basic price (current prices)
+      EAAU   EAA unit value
+      EAAQ   EAA quantity
+
+
 /;
 
 set dim3 "dimension three to be load in" /
@@ -146,3 +162,5 @@ execute_load '%projectfolder%data\coco2_output.gdx', DATA2;
 $include '2csv.gms'
 
 
+* --- unload set definitions
+execute_unload '%projectfolder%gams\set_definitions.gdx', activities, unit_values, cost_items, countries;
