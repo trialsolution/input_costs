@@ -3,11 +3,12 @@ $ontext
 
    CAPRI project file
 
-   GAMS file : scenfile_template.GMS
+   GAMS file : dublin_positive.GMS
 
-   @purpose  : template scenario file for the publication:
+   @purpose  : scenario file for the publication:
                'Increasing volatility in EU agriculture'
                EAAE Seminar Dublin (2012)
+               Positive increase in input prices
    @author   : Mihaly Himics (mihaly.himics@ec.europa.eu)
    @date     : 13.12.11
    @refDoc   :
@@ -42,14 +43,15 @@ display eu_countries, IY;
 *2) directly yield dependent inputs -- linear part of the objective function
 
 * --- data input from R result files
-p_tempDataIY(eu_countries, IY) 'temporary parameter for the coefficient of variation'
+parameter p_tempDataIY(Rall, ROWS) 'temporary parameter for the coefficient of variation'
+/
 $ondelim
-$include 'inputc_cov.csv'
+$include '..\inputc\inputc_cov.csv'
 $offdelim
-;
+/;
 
 
-DATA(eu_countries,"UVAG",IY,"PercentageChange") = p_tempDataIY(eu_countries, IY) * 100;
+DATA(eu_countries,"UVAG",IY,"PercentageChange") $ p_tempDataIY(eu_countries, IY) = p_tempDataIY(eu_countries, IY) * 100;
 DATA(eu_countries,"UVAP",IY,"PercentageChange") = DATA(eu_countries,"UVAG",IY,"PercentageChange");
 
 * map it to all regions in the current run (from MS to NUTS2)
@@ -65,14 +67,15 @@ $label fertCosts
 *3) fertilizer costs -- defined as cost of nutrients
 
 * --- data input from R result files
-p_tempDataFNUT(eu_countries, IY) 'temporary parameter for the coefficient of variation'
+parameter p_tempDataFNUT(Rall, ROWS) 'temporary parameter for the coefficient of variation'
+/
 $ondelim
-$include 'fertilizers_cov.csv'
+$include '..\inputc\fertilizers_cov.csv'
 $offdelim
-;
+/;
 
 *be aware: it only has a direct effect on mineral fertilizer costs
-DATA(eu_countries,"UVAG",FNUT,"ChangeFactor") = 1 + p_tempDataFNUT(eu_countries, IY);
+DATA(eu_countries,"UVAG",FNUT,"ChangeFactor") $ p_tempDataFNUT(eu_countries, FNUT) = 1 + p_tempDataFNUT(eu_countries, FNUT);
 
 * map it to all regions in the current run (from MS to NUTS2)
 DATA(RU,"UVAG",FNUT,"ChangeFactor") = sum(eu_countries $ map_rr(eu_countries,RU), DATA(eu_countries,"UVAG",FNUT,"ChangeFactor"));
