@@ -102,8 +102,8 @@ for(cou in unique(coco_uvap$country)){
 #investigating CoV results...
 mc <- container
 names(mc)[3] <- "value"
-cast(mc, costitem~., mean)
-cast(mc, costitem~., sd)
+#remove NA's  
+mc  <- mc[!is.na(mc$value),]
 mystats <- function(x)(c(N=length(x), Mean=mean(x), SD=sd(x), Min=min(x), Max=max(x)))
 cast(mc, costitem~., mystats)
 
@@ -216,6 +216,6 @@ p + geom_point() + geom_line() + stat_smooth()
 
 
 # --- write out results on CoV
-write.csv(mc, file="reports/inputc_cov.csv", row.names=FALSE)
-write.csv(mprii, file="reports/prii_cov.csv", row.names=FALSE)
-write.csv(mfert, file="reports/fertilizers_cov.csv", row.names=FALSE)
+write.table(mc, file="reports/inputc_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
+write.table(mprii, file="reports/prii_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
+write.table(mfert, file="reports/fertilizers_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
