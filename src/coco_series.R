@@ -216,6 +216,6 @@ p + geom_point() + geom_line() + stat_smooth()
 
 
 # --- write out results on CoV
-write.table(mc, file="reports/inputc_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
-write.table(mprii, file="reports/prii_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
-write.table(mfert, file="reports/fertilizers_cov.csv", row.names=FALSE, col.names=FALSE, sep=",")
+write.table(mc, file="reports/inputc_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
+write.table(mprii, file="reports/prii_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
+write.table(mfert, file="reports/fertilizers_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
