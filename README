@@ -1,1 +1,11 @@
-research project on input costs in EU agriculture
+* Calculations and basic data for the publication:
+"Increasing volatility of input costs in the EU agriculture"
+
+to be submitted to the next EAAE Seminar in Dublin:
+http://www.aesi.ie/eaae2012/
+
+* Folder structure:
+** /data: data sets
+** /gams: GAMS scripts to extract time-series from CoCo/Capreg + scenario files
+** /src : source files for the statistical analysis (in R)
+
