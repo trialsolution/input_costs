@@ -219,3 +219,6 @@ p + geom_point() + geom_line() + stat_smooth()
 write.table(mc, file="reports/inputc_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
 write.table(mprii, file="reports/prii_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
 write.table(mfert, file="reports/fertilizers_cov.csv", row.names=FALSE, col.names=FALSE, sep=",", quote=FALSE)
+
+# --- save workspace; to be used later by the reporting part
+save.image('coco.Rdata')
