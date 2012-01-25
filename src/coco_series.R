@@ -4,7 +4,7 @@ library(reshape2)
 library(ggplot2)
 
 # read in coco
-coco  <- read.csv("data/Data2.csv", header=TRUE)
+coco  <- read.csv("data/CoCoData.csv", header=TRUE)
 
 #correct header
 names(coco)  <- c("country","stage",  "dim3", "costitem", "1984",    "1985",   "1986",    "1987",    "1988" ,   "1989",    "1990",  "1991",    "1992",    "1993",    "1994",    "1995",
