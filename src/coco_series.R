@@ -57,51 +57,70 @@ calculate_cv <- function(mydata,mycostitem,mycountry){
   mysubset  <- subset(mydata, mydata$costitem==mycostitem & mydata$country==mycountry)
   
   if(length(mysubset$value)<5){
-    mycv <- NA
-    return(mycv)
-    break
+    mycv <- c(NA,"short")
+    isfitted  <- TRUE
   }
   
   #try a linear model
-  lm.temp  <- lm(value ~ year, data=mydata)
-  x <- summary(lm.temp)
-  if(x$adj.r.squared > 0.75 & x$coefficients[2,4]<0.05) {
-    mycv  <- sd(lm.temp$residuals)/mean(mysubset$value)
-    isfitted  <- TRUE
+  if(!isfitted){
+    lm.temp  <- lm(value ~ year, data=mysubset)
+    x <- summary(lm.temp)
+    if(x$adj.r.squared > 0.75 & x$coefficients[2,4]<0.05) {
+            mycv  <- c(sd(lm.temp$residuals)/mean(mysubset$value),
+                     "linear")
+            isfitted  <- TRUE
+   }    
   }
+  
   
   #if the linear model does not fit try a logarithmic transformation
-  logm.temp  <- lm(log(value) ~ log(year), data=mydata)
-  x <- summary(logm.temp)
-  if(x$adj.r.squared > 0.75 & isfitted=="FALSE" & x$coefficients[2,4]<0.05){
+  if(!isfitted){
+    logm.temp  <- lm(log(value) ~ log(year), data=mysubset)
+    x <- summary(logm.temp)
+    if(x$adj.r.squared > 0.75 & x$coefficients[2,4]<0.05){
     
-    mycv  <- sd(exp(logm.temp$fitted.values) - mysubset$value)    /mean(mysubset$value)
-    isfitted  <- TRUE
-    
+              mycv  <- c(sd(exp(logm.temp$fitted.values) - mysubset$value) /mean(mysubset$value),
+                       "log-log")
+              isfitted  <- TRUE
+    }
   }
   
-  if(isfitted=="FALSE"){
-    mycv  <- sd(mysubset$value)/mean(mysubset$value)
+  if(!isfitted){
+              mycv  <- c(sd(mysubset$value)/mean(mysubset$value),
+                       "notrend")
   }
-    return(mycv)  
+  
+# --- returns with the model type and coefficient  
+  return(mycv)  
 }
 
 
 #creates a data frame that will contain the coev.
 container  <- cast(coco_uvap, country+costitem~.)
 names(container)[3]  <- "coev"
+container  <- data.frame(container, model="")
+container$model <- as.character(container$model)
+
 
 #loop over all countries and cost items
 for(cou in unique(coco_uvap$country)){
   for(cost in unique(coco_uvap$costitem)){
-    container[container$country==cou & container$costitem==cost, ]$coev  <- calculate_cv(coco_uvap, cost, cou)
+    container[container$country==cou & container$costitem==cost, ]$coev <- as.numeric(calculate_cv(coco_uvap, cost, cou)[1])
+    container[container$country==cou & container$costitem==cost, ]$model <- calculate_cv(coco_uvap, cost, cou)[2]
   }
 }
 
 
 #investigating CoV results...
+mcont  <- melt(container, id=c("country", "costitem", "model"))
+cast(mcont, model ~. )
+cast(mcont, costitem ~ model)
+
+
+
 mc <- container
 names(mc)[3] <- "value"
+mc  <- mc[c(-4)]
 #remove NA's  
 mc  <- mc[!is.na(mc$value),]
 mystats <- function(x)(c(N=length(x), Mean=mean(x), SD=sd(x), Min=min(x), Max=max(x)))
@@ -148,16 +167,25 @@ coco_fert_prii  <- subset(mcoco, stage=="COCO1" & dim3=="PRII" & costitem=="FERT
 #creates a data frame that will contain the coev.
 container_prii  <- cast(coco_fert_prii, country+costitem~.)
 names(container_prii)[3]  <- "coev"
+container_prii  <- data.frame(container_prii, model="")
+container_prii$model <- as.character(container_prii$model)
 
 #loop over all countries
 for(cou in unique(coco_fert_prii$country)){
-    container_prii[container_prii$country==cou & container_prii$costitem=="FERT", ]$coev  <- calculate_cv(coco_fert_prii, "FERT", cou)
+    container_prii[container_prii$country==cou & container_prii$costitem=="FERT", ]$coev  <- as.numeric(calculate_cv(coco_fert_prii, "FERT", cou)[1])
+    container_prii[container_prii$country==cou & container_prii$costitem=="FERT", ]$model  <- calculate_cv(coco_fert_prii, "FERT", cou)[2]
+
 }
 
 
 #investigating CoV results...
+mcont_prii  <- melt(container_prii, id=c("country", "costitem", "model"))
+cast(mcont_prii, model ~. )
+cast(mcont_prii, costitem ~ model)
+
 mprii <- container_prii
 names(mprii)[3] <- "value"
+mprii  <- mprii[c(-4)]
 #remove NA's  
 mprii  <- mprii[!is.na(mprii$value),]
 cast(mprii, costitem~., mystats)
@@ -182,18 +210,28 @@ coco_uvap_fert  <- coco_uvap[indicator, ]
 # --- calculate coeffs. of variance 
 container_fert_uvap  <- cast(coco_uvap_fert, country+costitem~.)
 names(container_fert_uvap)[3]  <- "coev"
+container_fert_uvap  <- data.frame(container_fert_uvap, model="")
+container_fert_uvap$model <- as.character(container_fert_uvap$model)
+
 
 #loop over all countries and cost items
 for(cou in unique(container_fert_uvap$country)){
   for(cost in fertilizers){
-    if(length(container_fert_uvap[container_fert_uvap$country==cou & container_fert_uvap$costitem==cost, ]$coev))
-    container_fert_uvap[container_fert_uvap$country==cou & container_fert_uvap$costitem==cost, ]$coev  <- calculate_cv(coco_uvap_fert, cost, cou)
+    if(length(container_fert_uvap[container_fert_uvap$country==cou & container_fert_uvap$costitem==cost, ]$coev)){
+      container_fert_uvap[container_fert_uvap$country==cou & container_fert_uvap$costitem==cost, ]$coev  <- as.numeric(calculate_cv(coco_uvap_fert, cost, cou)[1])
+    container_fert_uvap[container_fert_uvap$country==cou & container_fert_uvap$costitem==cost, ]$model  <- calculate_cv(coco_uvap_fert, cost, cou)[2]
+    }    
   }
 }
 
 #investigating CoV results...
+mcont_fert  <- melt(container_fert_uvap, id=c("country", "costitem", "model"))
+cast(mcont_fert, model ~. )
+cast(mcont_fert, costitem ~ model)
+
 mfert <- container_fert_uvap
 names(mfert)[3] <- "value"
+mfert  <- mfert[c(-4)]
 #remove NA's  
 mfert  <- mfert[!is.na(mfert$value),]
 cast(mfert, costitem~., mystats)
