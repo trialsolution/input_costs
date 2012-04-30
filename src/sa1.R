@@ -49,6 +49,10 @@ coco_uvap  <- coco_uvap[indicator, ]
 coco_uvap  <- coco_uvap[coco_uvap$country=="DE000000", ]
 coco_uvap  <- coco_uvap[c(-1)]
 
+# store the mean values to later on calculate relative changes
+coco_zero  <- cast(coco_uvap, costitem~., mean)
+names(coco_zero)[2] <- "means"
+
 
 # we draw a correlated random sample on the residuals of a fitting trend model
 # residuals are assumed to be normally distributed with zero mean
@@ -122,16 +126,33 @@ meanDE  <- mean(coco_uvap)
 #we need the vector of means, and the covariance matrix
 #! the covariance matrix needs to be positive definite
 #x  <- mvrnorm(n=1000, rep(0,2), corDE)
-x  <- mvrnorm(n=10000, meanDE, covDE)
+
+# nr. of draws
+NrDraws  <- 1000
+set.seed(234)
+
+x  <- mvrnorm(n=NrDraws, rep(0,length(meanDE)), covDE)
 
 
 # to check variances on the screen
 covDE
 var(x)
 
-
-# create a csv file with the correlated random draw
+# create a csv file with the correlated random draws
 write.table(x, file="reports/random_draw.csv", row.names=FALSE, col.names=TRUE, sep=",", quote=FALSE)
+
+
+# convert the draws to relative changes compared to the mean values
+for(i in 1:14){
+x[,i]  <- x[,i] /
+#   means of the original input prices
+  as.numeric(coco_zero[coco_zero$costitem==colnames(x)[i],][2]) * 100
+}
+
+# create a csv file with the relative changes => to be used later in the scenario file
+write.table(x, file="reports/random_draw_relative.csv", row.names=FALSE, col.names=TRUE, sep=",", quote=FALSE)
+
+
 
 # --- save workspace; to be used later by the reporting part
 save.image('randomdraw.Rdata')
