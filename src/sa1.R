@@ -50,7 +50,7 @@ coco_uvap  <- coco_uvap[coco_uvap$country=="DE000000", ]
 coco_uvap  <- coco_uvap[c(-1)]
 
 # store the mean values to later on calculate relative changes
-coco_zero  <- cast(coco_uvap, costitem~., mean)
+coco_zero  <- dcast(coco_uvap, costitem~., mean)
 names(coco_zero)[2] <- "means"
 
 

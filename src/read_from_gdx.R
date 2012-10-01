@@ -32,6 +32,9 @@ names(countries)  <- c("countrycode", "label")
 
 #yield dependent inputs = set IY in CAPRI
 iy <- c("SEED", "PLAP", "REPM", "REPB", "ELEC", "EGAS", "EFUL", "ELUB", "WATR", "INPO", "SERI", "IPHA")
+#all inputs used in this analysis
+iall  <- c("SEED", "PLAP", "REPM", "REPB", "ELEC", "EGAS", "EFUL", "ELUB", 
+           "WATR", "INPO", "SERI", "IPHA", "NITF", "PHOF", "POTF")
 
 
 
@@ -39,7 +42,7 @@ iy <- c("SEED", "PLAP", "REPM", "REPB", "ELEC", "EGAS", "EFUL", "ELUB", "WATR", 
 #..use stage coco1 as it has values until 2010
 coco_uvap  <- subset(mcoco, stage=="COCO1" & col=="UVAP", select=c("country", "row", "year", "value"))
 #..filter only 'iy'
-coco_uvap  <- coco_uvap[coco_uvap$row %in% iy, ]
+coco_uvap  <- coco_uvap[coco_uvap$row %in% iall, ]
 
 #concentrating on EU27 countries (most data problems are with Norway & Western Balkans)
 coco_uvap  <- coco_uvap[coco_uvap$country %in% countries$countrycode, ]
