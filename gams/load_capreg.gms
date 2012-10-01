@@ -1,7 +1,7 @@
 $title converts capreg time series to an R-readable format
 
 * --- settings
-$setglobal projectfolder d:\User-DATA\capri\inputc\
+$setglobal projectfolder s:\inputc\input_costs\
 
 * --- load in Capreg time series
 
@@ -9,7 +9,7 @@ $setglobal projectfolder d:\User-DATA\capri\inputc\
 *A) create filter for input costs variables
 
 * the data parameter has 5 dimensions; here we specify filters to load the required subset
-set years /1984*2007/;
+set years /1984*2009/;
 
 set countries/
 *EU15
@@ -81,10 +81,11 @@ set cost_items "cost items of interest"/
 
 
 * --- intersectorally produced inputs
-        NITF,  PHOF , POTF,
+        NITF,  PHOF , POTF
+
 *       Feedingsstuff + young animals
-        FCER , FPRO , FENE , FMIL , FOTH , FGRA,  FCOM, FSGM, FMAI, FROO, FOFA, FSTR,
-        ICAM,  ICAF,  IHEI , ICOW , IPIG , IBUL,  ILAM
+*        FCER , FPRO , FENE , FMIL , FOTH , FGRA,  FCOM, FSGM, FMAI, FROO, FOFA, FSTR,
+*        ICAM,  ICAF,  IHEI , ICOW , IPIG , IBUL,  ILAM
 
 /;
 
