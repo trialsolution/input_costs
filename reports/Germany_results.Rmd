@@ -1,0 +1,111 @@
+SA on input prices
+========================================================
+
+
+
+```{r echo=FALSE}
+library(ggplot2)
+library(reshape2)
+
+```
+
+
+**assumptions:** correlated random draws on 'yield dependent' inputs of CAPRI and the NPK nutrient-prices
+**method:** monte-carlo simulation, 1000 runs; using the GUSS solver option for CONOPT
+
+
+Random draws
+------------
+
+Most volatile are fertilizer and fuel/energy prices.
+
+
+```{r fig.width=7, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/draw_cov.RData")
+# as the means are close to zero (remember they assumed to be normal with mean zero) we use the standard deviation instead of c.o.v.
+p <- ggplot(subset(draw_cov, region=="DE000000"),aes(sd,reorder(input,sd)))
+p + geom_point()
+```
+
+
+Induced variation in costs
+--------------------------
+
+Strangely poultry fattening has the highest coefficient of variation in most of the regions.
+
+```{r fig.width=7, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/cost_cov.RData")
+# ordered cov's in all regions
+p <- ggplot(cost_cov, aes(cov,reorder(activity,cov)))
+p+geom_point()
+```
+
+```{r fig.width=7, fig.height=6}
+# ordered list of cov's in a selected region
+p <- ggplot(subset(cost_cov, technology=="T" & region=="DE400000"),aes(cov,reorder(activity,cov)))
+p + geom_point()
+```
+
+
+Induced changes in marginal gross value added
+---------------------------------------------
+
+Marginal Gross Value Added is used as a proxy for the income. The induced variation in MGVA varies across activities and regions. Residual activites like VSET or OFAR show big variation.
+
+```{r fig.width=7, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/mgva_cov.RData")
+# cov's for all regions
+p <- ggplot(subset(mgva_cov, region!="DE000000"), aes(cov,reorder(activity,cov)))
+p+geom_point()+xlim(0,0.3)
+```
+
+The aggregated figures for Germany: 
+```{r fig.width=7, fig.height=6}
+p <- ggplot(subset(mgva_cov, region=="DE000000"), aes(cov,reorder(activity,cov)))
+p+geom_point()
+```
+
+Selected results
+----------------
+
+
+Most activity levels show little variation; they are quite stable.
+See e.g. boxplots of activity levels in a selected region. Apart from PIGF, the ranges are small.
+
+```{r fig.width=20, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/actlev.RData")
+qplot(activity, value, data=subset(actlev, region=="DE230000" & technology=="T"), geom="boxplot")
+```
+
+
+Comparison of Z-scores for wheat over the regions:
+```{r fig.width=10, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/scaled_actlev.RData")
+qplot(value, data=subset(scaled_actlev, region!="DE000000" & technology=="T" & activity=="SWHE"), geom="density", color=region)
+```
+
+
+Comparison of Z-scores for different activities in a selected region:
+```{r fig.width=10, fig.height=6}
+qplot(value, data=subset(scaled_actlev, region=="DE230000" & technology=="T"), geom="density", color=activity)
+```
+
+
+An example box plot for SWHE in a selected region.
+```{r fig.width=7, fig.height=6}
+qplot(activity, value, data=subset(actlev, region=="DE230000" & technology=="T" & activity=="SWHE"), geom="boxplot")
+```
+
+
+The distribution of activity levels is usually flatter for T1 technology, see e.g. soft wheat in region DE230000
+```{r fig.width=7, fig.height=6}
+qplot(value, data=subset(actlev, region=="DE230000" & technology!="T" & activity=="SWHE"), geom="density", color=technology)
+```
+
+Ordered list of cov's per activities in a selected region. They are generally small...
+```{r fig.width=7, fig.height=6}
+load(file="n:/agpo/work1/himics/inputc/input_costs/levl_cov.RData")
+p <- ggplot(subset(levl_cov, technology=="T" & region=="DE400000"),aes(cov,reorder(activity,cov)))
+p + geom_point()
+```
+
