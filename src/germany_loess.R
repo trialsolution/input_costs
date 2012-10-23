@@ -4,8 +4,14 @@ ger <- subset(capreg_uvap, country=="DE000000")
 
 
 # plot some specific cases: LOESS regression
+# time-series show a structural break around 2005-2007; is that a sign of increased volatility?
+p <- ggplot(subset(ger, row=="SEED"), aes(year,value))
+p + geom_point() + geom_smooth(method="loess")
 
-
+p <- ggplot(subset(ger, row=="NITF"), aes(year,value))
+p + geom_point() + geom_smooth(method="loess")
+p <- ggplot(subset(ger, row=="PHOF"), aes(year,value))
+p + geom_point() + geom_smooth(method="loess")
 
 
 # try to do it with ddply in one go
