@@ -2,6 +2,12 @@
 
 ger <- subset(capreg_uvap, country=="DE000000")
 
+
+# plot some specific cases: LOESS regression
+
+
+
+
 # try to do it with ddply in one go
 
 my_loess  <- function(df){
@@ -79,18 +85,38 @@ write.table(x, file="reports/random_draw_relative_DE.csv", row.names=FALSE, col.
 
 
 
+# 
+# --- write out the random draw to gdx
+#
 
-#write out to gdx
 library(gdxrrw)
 
 # path to the gams installation
 igdx("n:/soft/gams/gams23.8_64")
 
-wgdx("reports/random_relative_DE.gdx",as.data.frame(x))
+# convert to data frame
+xdf <- as.data.frame(x)
+
+# format it as a GAMS parameter (values in the last column)
+mxdf <- melt(xdf, id=0)
+
+# add random draws as separated column
+mxdf$draw <- rep(1:1000,length(unique(mxdf$variable)))
+
+# GAMS sets should be R factors:)
+mxdf$variable  <- as.factor(mxdf$variable)
+mxdf$draw  <- as.factor(mxdf$draw)
+
+# reorder a bit...
+mxdf <- mxdf[c("draw","variable","value")]
+
+# adding attributes: GAMS parameter name and textual description
+attr(mxdf,"symName")="mxdf"
+attr(mxdf,"ts")="correlated random draws calculated as relative change"
+
+# write out
+wgdx.df("reports/random_relative_DE.gdx",mxdf)
 
 
-gdxName <- "data/coco2_output"
-symName <- "DATA2"
-coco_data2 <- rgdx.param(gdxName,symName,names=c("country","stage","col","row","year"))
-names(coco_data2)[6] <- "variable"
+
 
