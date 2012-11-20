@@ -108,13 +108,15 @@ mxdf <- melt(xdf, id=0)
 
 # add random draws as separated column
 mxdf$draw <- rep(1:1000,length(unique(mxdf$variable)))
+mxdf$country <- rep("DE000000", 1000*length(unique(mxdf$variable)))
 
 # GAMS sets should be R factors:)
 mxdf$variable  <- as.factor(mxdf$variable)
 mxdf$draw  <- as.factor(mxdf$draw)
+mxdf$country  <- as.factor(mxdf$country)
 
 # reorder a bit...
-mxdf <- mxdf[c("draw","variable","value")]
+mxdf <- mxdf[c("draw","country","variable","value")]
 
 # adding attributes: GAMS parameter name and textual description
 attr(mxdf,"symName")="mxdf"
